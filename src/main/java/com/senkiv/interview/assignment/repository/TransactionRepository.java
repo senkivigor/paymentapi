@@ -19,4 +19,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
 
 	Transaction findByAuthCode(String authCode);
 
+	boolean existsByAuthCode(String authCode);
+
 }

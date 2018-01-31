@@ -82,19 +82,7 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	@Transactional
 	public TransferTransactionResponseDTO transferTransaction(final TransferTransactionRequestDTO transferTransactionRequestDTO) {
-		Transaction transaction;
-		// check if transaction has been authorized before and create new one if not
-		if (transferTransactionRequestDTO.getAuthCode() == null || transferTransactionRequestDTO.getAuthCode().isEmpty()) {
-			transaction = new TransferTransactionDTOToTransactionMapper().mapToEntity(transferTransactionRequestDTO);
-			transaction.setUser(userRepository.findOne(transferTransactionRequestDTO.getUserId()));
-		} else {
-			transaction = transactionRepository.findByAuthCode(transferTransactionRequestDTO.getAuthCode());
-			transaction.setTxAmount(new BigDecimal(transferTransactionRequestDTO.getTxAmount()).setScale(2, RoundingMode.UP));
-			transaction.setTxAmountCy(transferTransactionRequestDTO.getTxAmountCy());
-			transaction.setFee(new BigDecimal(transferTransactionRequestDTO.getFee()).setScale(2, RoundingMode.UP));
-			transaction.setFeeCy(transferTransactionRequestDTO.getFeeCy());
-			transaction.setFeeMode(Transaction.TransactionFeeMode.valueOf(transferTransactionRequestDTO.getFeeMode()));
-		}
+		Transaction transaction = prepareTransactionToTransfer(transferTransactionRequestDTO);
 		Optional<ErrorCode> errorCode = validateTransferTransaction(transaction);
 		if (errorCode.isPresent()) {
 			transaction.setTransactionStatus(Transaction.TransactionStatus.FAILED);
@@ -108,6 +96,29 @@ public class TransactionServiceImpl implements TransactionService {
 		}
 		transactionRepository.save(transaction);
 		return buildTransferTransactionResponseDTO(transferTransactionRequestDTO, transaction);
+	}
+
+	/**
+	 * check if transaction has been authorized before and create new one if not
+	 *
+	 * @param transferTransactionRequestDTO transferTransactionRequestDTO
+	 * @return transaction to transfer
+	 */
+	private Transaction prepareTransactionToTransfer(TransferTransactionRequestDTO transferTransactionRequestDTO) {
+		Transaction transaction;
+		if (transferTransactionRequestDTO.getAuthCode() != null && !transferTransactionRequestDTO.getAuthCode().isEmpty()
+				&& transactionRepository.existsByAuthCode(transferTransactionRequestDTO.getAuthCode())) {
+			transaction = transactionRepository.findByAuthCode(transferTransactionRequestDTO.getAuthCode());
+			transaction.setTxAmount(new BigDecimal(transferTransactionRequestDTO.getTxAmount()).setScale(2, RoundingMode.UP));
+			transaction.setTxAmountCy(transferTransactionRequestDTO.getTxAmountCy());
+			transaction.setFee(new BigDecimal(transferTransactionRequestDTO.getFee()).setScale(2, RoundingMode.UP));
+			transaction.setFeeCy(transferTransactionRequestDTO.getFeeCy());
+			transaction.setFeeMode(Transaction.TransactionFeeMode.valueOf(transferTransactionRequestDTO.getFeeMode()));
+		} else {
+			transaction = new TransferTransactionDTOToTransactionMapper().mapToEntity(transferTransactionRequestDTO);
+			transaction.setUser(userRepository.findOne(transferTransactionRequestDTO.getUserId()));
+		}
+		return transaction;
 	}
 
 	private Optional<ErrorCode> validateAuthorizeTransaction(Transaction transactionToAuthorize) {
@@ -144,7 +155,7 @@ public class TransactionServiceImpl implements TransactionService {
 		ValidationRule transactionExist = transaction -> {
 			boolean valid;
 			if (transaction.getAuthCode() != null && !transaction.getAuthCode().isEmpty()) {
-				valid = transaction.getTransactionStatus().equals(Transaction.TransactionStatus.PENDING);
+				valid = Transaction.TransactionStatus.PENDING.equals(transaction.getTransactionStatus());
 			} else {
 				valid = !transactionRepository.existsByTxId(transaction.getTxId());
 			}
