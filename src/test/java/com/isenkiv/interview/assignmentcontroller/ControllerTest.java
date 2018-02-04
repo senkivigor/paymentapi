@@ -1,18 +1,15 @@
 package com.isenkiv.interview.assignmentcontroller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.UUID;
-
+import com.senkiv.interview.assignment.Application;
+import com.senkiv.interview.assignment.domain.dto.AuthorizeTransactionRequestDTO;
+import com.senkiv.interview.assignment.domain.dto.CancelTransactionRequestDTO;
+import com.senkiv.interview.assignment.domain.dto.TransferTransactionRequestDTO;
+import com.senkiv.interview.assignment.domain.dto.VerifyUserRequestDTO;
+import com.senkiv.interview.assignment.domain.entity.Transaction;
+import com.senkiv.interview.assignment.domain.entity.User;
+import com.senkiv.interview.assignment.repository.TransactionRepository;
+import com.senkiv.interview.assignment.repository.UserRepository;
+import com.senkiv.interview.assignment.service.impl.CurrencyConverterHelper;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -29,16 +26,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.senkiv.interview.assignment.Application;
-import com.senkiv.interview.assignment.domain.dto.AuthorizeTransactionRequestDTO;
-import com.senkiv.interview.assignment.domain.dto.CancelTransactionRequestDTO;
-import com.senkiv.interview.assignment.domain.dto.TransferTransactionRequestDTO;
-import com.senkiv.interview.assignment.domain.dto.VerifyUserRequestDTO;
-import com.senkiv.interview.assignment.domain.entity.Transaction;
-import com.senkiv.interview.assignment.domain.entity.User;
-import com.senkiv.interview.assignment.repository.TransactionRepository;
-import com.senkiv.interview.assignment.repository.UserRepository;
-import com.senkiv.interview.assignment.service.impl.CurrencyConverterHelper;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author isenkiv
@@ -188,13 +187,13 @@ public class ControllerTest {
 		User user = userRepository.findOne("1");
 		BigDecimal userBalanceBeforeTx = user.getBalance();
 		TransferTransactionRequestDTO transferTransactionRequestDTO = createTransferTransactionRequestDTO("1", null, "100", "USD", "0.5", "EUR",
-				"A", "successNotAuthorized1");
+				"ADD", "successNotAuthorized1");
 		mockMvc.perform(post("/api/transfer/").content(this.json(transferTransactionRequestDTO)).contentType(contentType))
 				.andExpect(status().isOk()).andExpect(content()
 				.json("{\n" + "    \"userId\": \"1\",\n" + "    \"success\": true,\n" + "    \"txId\": \"successNotAuthorized1\",\n"
 						+ "    \"merchantTxId\": \"" + transactionRepository.findByTxId("successNotAuthorized1").getId() + "\",\n"
 						+ "    \"errCode\": null,\n" + "    \"errMsg\": null" + "}"));
-		//check user balance changed (feeMode ="A" so fee is added to txAmount)
+		//check user balance changed (feeMode ="ADD" so fee is added to txAmount)
 		// Note: user balanceCy is "UAH", txAmountCy is USD
 		BigDecimal expected = CurrencyConverterHelper.convert(transferTransactionRequestDTO.getTxAmountCy(), user.getBalanceCy(),
 				new BigDecimal(transferTransactionRequestDTO.getTxAmount())).add(userBalanceBeforeTx).setScale(2, BigDecimal.ROUND_UP);
@@ -208,13 +207,13 @@ public class ControllerTest {
 		User user = userRepository.findOne("3");
 		BigDecimal userBalanceBeforeTx = user.getBalance();
 		TransferTransactionRequestDTO transferTransactionRequestDTO = createTransferTransactionRequestDTO("3", null, "-100000", "USD", "0.5",
-				"EUR", "D", "successTransferOverCredit");
+				"EUR", "DEDUCT", "successTransferOverCredit");
 		mockMvc.perform(post("/api/transfer/").content(this.json(transferTransactionRequestDTO)).contentType(contentType))
 				.andExpect(status().isOk()).andExpect(content()
 				.json("{\n" + "    \"userId\": \"3\",\n" + "    \"success\": true,\n" + "    \"txId\": \"successTransferOverCredit\",\n"
 						+ "    \"merchantTxId\": \"" + transactionRepository.findByTxId("successTransferOverCredit").getId() + "\",\n"
 						+ "    \"errCode\": null,\n" + "    \"errMsg\": null" + "}"));
-		//check user balance changed (feeMode ="D" so fee should be charged separately),
+		//check user balance changed (feeMode ="DEDUCT" so fee should be charged separately),
 		// Note: user balanceCy is "UAH", txAmountCy is USD, feeCy is EUR
 		BigDecimal expected = CurrencyConverterHelper.convert(transferTransactionRequestDTO.getTxAmountCy(), user.getBalanceCy(),
 				new BigDecimal(transferTransactionRequestDTO.getTxAmount())).add(userBalanceBeforeTx).subtract(CurrencyConverterHelper
@@ -241,7 +240,7 @@ public class ControllerTest {
 		transactionRepository.save(transaction);
 
 		TransferTransactionRequestDTO transferTransactionRequestDTO = createTransferTransactionRequestDTO("1", authCode, "100", "USD", "0.5",
-				"EUR", "A", "successWithAuthorized1");
+				"EUR", "ADD", "successWithAuthorized1");
 
 		mockMvc.perform(post("/api/transfer/").content(this.json(transferTransactionRequestDTO)).contentType(contentType))
 				.andExpect(status().isOk()).andExpect(content()
@@ -249,7 +248,7 @@ public class ControllerTest {
 						+ "    \"merchantTxId\": \"" + transactionRepository.findByTxId("successWithAuthorized1").getId() + "\",\n"
 						+ "    \"errCode\": null,\n" + "    \"errMsg\": null" + "}"));
 
-		//check user balance changed (feeMode ="A" so fee is added to txAmount)
+		//check user balance changed (feeMode ="ADD" so fee is added to txAmount)
 		// Note: user balanceCy is "UAH", txAmountCy is USD
 		BigDecimal expected = CurrencyConverterHelper.convert(transferTransactionRequestDTO.getTxAmountCy(), user.getBalanceCy(),
 				new BigDecimal(transferTransactionRequestDTO.getTxAmount())).add(userBalanceBeforeTx).setScale(2, BigDecimal.ROUND_UP);
@@ -367,7 +366,7 @@ public class ControllerTest {
 	}
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
 		User user1 = new User();
@@ -427,7 +426,7 @@ public class ControllerTest {
 		userRepository.save(Arrays.asList(user1, user2, user3));
 	}
 
-	protected String json(Object o) throws IOException {
+	private String json(Object o) throws IOException {
 		MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
 		this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
 		return mockHttpOutputMessage.getBodyAsString();

@@ -1,22 +1,6 @@
 package com.senkiv.interview.assignment.service.impl;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.senkiv.interview.assignment.domain.dto.AuthorizeTransactionRequestDTO;
-import com.senkiv.interview.assignment.domain.dto.AuthorizeTransactionResponseDTO;
-import com.senkiv.interview.assignment.domain.dto.CancelTransactionRequestDTO;
-import com.senkiv.interview.assignment.domain.dto.CancelTransactionResponseDTO;
-import com.senkiv.interview.assignment.domain.dto.TransferTransactionRequestDTO;
-import com.senkiv.interview.assignment.domain.dto.TransferTransactionResponseDTO;
+import com.senkiv.interview.assignment.domain.dto.*;
 import com.senkiv.interview.assignment.domain.entity.Transaction;
 import com.senkiv.interview.assignment.domain.entity.User;
 import com.senkiv.interview.assignment.domain.mapper.impl.AuthorizeTransactionDTOToTransactionMapper;
@@ -28,6 +12,16 @@ import com.senkiv.interview.assignment.service.UserService;
 import com.senkiv.interview.assignment.service.validation.ErrorCode;
 import com.senkiv.interview.assignment.service.validation.ValidationRule;
 import com.senkiv.interview.assignment.service.validation.ValidatorBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -145,8 +139,13 @@ public class TransactionServiceImpl implements TransactionService {
 					availableAmount.add(transactionAmountUserCurrency).compareTo(BigDecimal.ZERO) >= 0 ? null : ErrorCode.NOT_ENOUGH_MONEY);
 		};
 
-		return ValidatorBuilder.validatorBuilder().first(userExist).successor(transactionExist).successor(currencySupported)
-				.successor(userBecomeOverCredit).build().validate(transactionToAuthorize);
+		return ValidatorBuilder.validatorBuilder()
+                .first(userExist)
+                .successor(transactionExist)
+                .successor(currencySupported)
+				.successor(userBecomeOverCredit)
+                .build()
+                .validate(transactionToAuthorize);
 	}
 
 	private Optional<ErrorCode> validateTransferTransaction(Transaction transactionToTransfer) {
@@ -186,7 +185,7 @@ public class TransactionServiceImpl implements TransactionService {
 	private BigDecimal calculateUserBalanceChange(Transaction transaction) {
 		BigDecimal userBalanceChange = CurrencyConverterHelper
 				.convert(transaction.getTxAmountCy(), transaction.getUser().getBalanceCy(), transaction.getTxAmount());
-		if (transaction.getFeeMode().equals(Transaction.TransactionFeeMode.D)) {
+		if (transaction.getFeeMode().equals(Transaction.TransactionFeeMode.DEDUCT)) {
 			userBalanceChange = userBalanceChange.subtract(
 					CurrencyConverterHelper.convert(transaction.getFeeCy(), transaction.getUser().getBalanceCy(), transaction.getFee()));
 		}
