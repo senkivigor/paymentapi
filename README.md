@@ -11,11 +11,12 @@ git clone https://github.com/senkivigor/paymentapi.git
 cd paymentapi/api
 mvn install
 ```
-# Examples
-Service is available on interview-assign-ihor-senkiv.herokuapp.com/:8080
-!!!Note:
-Supported cuurrencies: EUR, USD, UAH.
-User with userId are available: 1, 2, 3.    
+# Examples  
+Service is available on:  
+**interview-assign-ihor-senkiv.herokuapp.com/:8080**  
+**!!!Note:**  
+Supported currencies: **EUR, USD, UAH**.  
+Users with userId are available: **1, 2, 3**.   
 
 ## Example requests
 ### Verify User
