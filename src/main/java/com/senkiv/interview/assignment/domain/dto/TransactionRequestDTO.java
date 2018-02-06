@@ -2,15 +2,26 @@ package com.senkiv.interview.assignment.domain.dto;
 
 import java.util.UUID;
 
-public class AuthorizeTransactionRequestDTO {
+public class TransactionRequestDTO {
     private String userId;
     private String txAmount;
     private String txAmountCy;
     private String txId;
     private Integer txTypeId;
     private String txName;
+    private String authCode;
+    private String fee;
+    private String feeCy;
+    private String feeMode;
+    private String txRefId;
     private String provider;
+    private String statusCode;
+    private String pspStatusCode;
+    private String pspRefId;
+    private String pspStatusMessage;
     private String pspService;
+    private String txPspAmount;
+    private String txPspAmountCy;
     private String originTxId;
     private UUID accountId;
     private String accountHolder;
@@ -69,6 +80,46 @@ public class AuthorizeTransactionRequestDTO {
         this.txName = txName;
     }
 
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
+
+    public String getFee() {
+        return fee;
+    }
+
+    public void setFee(String fee) {
+        this.fee = fee;
+    }
+
+    public String getFeeCy() {
+        return feeCy;
+    }
+
+    public void setFeeCy(String feeCy) {
+        this.feeCy = feeCy;
+    }
+
+    public String getFeeMode() {
+        return feeMode;
+    }
+
+    public void setFeeMode(String feeMode) {
+        this.feeMode = feeMode;
+    }
+
+    public String getTxRefId() {
+        return txRefId;
+    }
+
+    public void setTxRefId(String txRefId) {
+        this.txRefId = txRefId;
+    }
+
     public String getProvider() {
         return provider;
     }
@@ -77,12 +128,60 @@ public class AuthorizeTransactionRequestDTO {
         this.provider = provider;
     }
 
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getPspStatusCode() {
+        return pspStatusCode;
+    }
+
+    public void setPspStatusCode(String pspStatusCode) {
+        this.pspStatusCode = pspStatusCode;
+    }
+
+    public String getPspRefId() {
+        return pspRefId;
+    }
+
+    public void setPspRefId(String pspRefId) {
+        this.pspRefId = pspRefId;
+    }
+
+    public String getPspStatusMessage() {
+        return pspStatusMessage;
+    }
+
+    public void setPspStatusMessage(String pspStatusMessage) {
+        this.pspStatusMessage = pspStatusMessage;
+    }
+
     public String getPspService() {
         return pspService;
     }
 
     public void setPspService(String pspService) {
         this.pspService = pspService;
+    }
+
+    public String getTxPspAmount() {
+        return txPspAmount;
+    }
+
+    public void setTxPspAmount(String txPspAmount) {
+        this.txPspAmount = txPspAmount;
+    }
+
+    public String getTxPspAmountCy() {
+        return txPspAmountCy;
+    }
+
+    public void setTxPspAmountCy(String txPspAmountCy) {
+        this.txPspAmountCy = txPspAmountCy;
     }
 
     public String getOriginTxId() {

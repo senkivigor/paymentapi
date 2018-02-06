@@ -24,19 +24,20 @@ public class Transaction {
     private String authCode;
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
-    private Integer errorCode;
-    private String errorMessage;
+
 
     public enum TransactionFeeMode {
-        ADD,
-        DEDUCT,;
+        //add
+        A,
+        //deduct
+        D,;
     }
 
     public enum TransactionStatus {
         COMPLETED,
         PENDING,
         CANCELED,
-        FAILED,;
+        FAILED
     }
 
     public Long getId() {
@@ -115,22 +116,6 @@ public class Transaction {
         this.transactionStatus = transactionStatus;
     }
 
-    public Integer getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(Integer errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -159,8 +144,6 @@ public class Transaction {
                 ", feeMode=" + feeMode +
                 ", authCode='" + authCode + '\'' +
                 ", transactionStatus=" + transactionStatus +
-                ", errorCode=" + errorCode +
-                ", errorMessage='" + errorMessage + '\'' +
                 '}';
     }
 }

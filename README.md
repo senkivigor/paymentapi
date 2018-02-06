@@ -47,9 +47,7 @@ Example of JSON  response body:
     "mobile": "67437826437",
     "balance": 2000,
     "balanceCy": "EUR",
-    "locale": "de_DE",
-    "errCode": null,
-    "errMsg": null
+    "locale": "de_DE"
 }
 ```
 #### Failed
@@ -65,21 +63,6 @@ Example of JSON  response body:
 {
     "userId": "5",
     "success": false,
-    "userCat": null,
-    "kycStatus": null,
-    "sex": null,
-    "firstName": null,
-    "lastName": null,
-    "street": null,
-    "city": null,
-    "zip": null,
-    "country": null,
-    "email": null,
-    "dob": null,
-    "mobile": null,
-    "balance": null,
-    "balanceCy": null,
-    "locale": null,
     "errCode": 1,
     "errMsg": "Unknown userId"
 }
@@ -117,9 +100,7 @@ Example of JSON  response body:
     "success": true,
     "txId": "12232123",
     "merchantTxId": "1",
-    "authCode": "a03ec470-a416-4fe6-9833-15ee76513779",
-    "errCode": null,
-    "errMsg": null
+    "authCode": "8ba165fb-671e-4e5d-9e90-fad24bfa7ae1"
 }
 ```
 #### Failed
@@ -154,7 +135,7 @@ Example of JSON  response body:
     "success": false,
     "txId": "12232123",
     "merchantTxId": "2",
-    "authCode": "106c8a56-51f3-4006-b4b0-090253039517",
+    "authCode": "364eceb1-a2ee-4ff2-a4ad-5308b2fe0221",
     "errCode": 3,
     "errMsg": "Transaction is not valid or has been already processed"
 }
@@ -201,8 +182,7 @@ Example of JSON  response body:
     "success": true,
     "txId": "1234",
     "merchantTxId": "9",
-    "errCode": null,
-    "errMsg": null
+    "authCode":"e635f064-2e06-4fd2-a74a-a991d566ab6c"
 }
 ```
 #### Failed
@@ -242,8 +222,6 @@ Example of JSON  response body:
 {
     "userId": "2",
     "success": false,
-    "txId": "12",
-    "merchantTxId": "11",
     "errCode": 4,
     "errMsg": "Currency is not supported"
 }
@@ -282,8 +260,9 @@ Example of JSON  response body:
 {
     "userId": "1",
     "success": true,
-    "errCode": null,
-    "errMsg": null
+    "txId":"123",
+    "merchantTxId": "1",
+    "authCode": "46607ee1-ec18-4d3e-a959-e6b2a94e6f8f"
 }
 ```
 #### Failed
@@ -316,6 +295,8 @@ Example of JSON  response body:
 ```sh
 {
     "userId": "2",
+    "txId":"123",
+    "authCode":"2146f93f-5d69-4a7b-b933-81dfd8f78f55",
     "success": false,
     "errCode": 3,
     "errMsg": "Transaction is not valid or has been already processed"
