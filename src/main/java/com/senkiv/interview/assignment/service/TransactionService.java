@@ -2,6 +2,9 @@ package com.senkiv.interview.assignment.service;
 
 import com.senkiv.interview.assignment.domain.dto.TransactionRequestDTO;
 import com.senkiv.interview.assignment.domain.dto.TransactionResponseDTO;
+import com.senkiv.interview.assignment.domain.entity.Transaction;
+
+import java.util.Set;
 
 public interface TransactionService {
     /**
@@ -30,4 +33,21 @@ public interface TransactionService {
      * @return transfer transaction response object
      */
     TransactionResponseDTO transferTransaction(TransactionRequestDTO transactionRequestDTO);
+
+    /**
+     * Get transaction by txId
+     * @param txId txId
+     *
+     * @return transaction if exist or null
+     */
+    Transaction getTransctionByTxId(String txId);
+
+    /**
+     * Get all transaction filtered by userId and txAmountCy
+     *
+     * @param userId userId
+     * @param txAmountCy txAmountCy
+     * @return found transactions
+     */
+    Set<Transaction> getTransactionsByUserIdAndAmountCy(String userId, String txAmountCy);
 }

@@ -1,5 +1,9 @@
 package com.senkiv.interview.assignment.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -14,6 +18,8 @@ public class Transaction {
     private String txId;
     @ManyToOne()
     @JoinColumn(name = "user_id")
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="userId")
+    @JsonIdentityReference(alwaysAsId=true)
     private User user;
     private BigDecimal txAmount;
     private String txAmountCy;

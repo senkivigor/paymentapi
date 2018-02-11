@@ -22,8 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -93,6 +96,24 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.save(transaction);
         logger.debug("transaction with txId " + transaction.getTxId() + " has not been transferred: " + errorCode.get().toString());
         return EntityConverter.failedTransactionResponse(transactionRequestDTO, null, errorCode.get());
+    }
+
+    @Override public Transaction getTransctionByTxId(String txId) {
+        return transactionRepository.findByTxId(txId);
+    }
+
+    @Override public Set<Transaction> getTransactionsByUserIdAndAmountCy(String userId, String txAmountCy) {
+        Set<Transaction> transactions;
+        if (StringUtils.isBlank(userId)) {
+            transactions = new HashSet<>(transactionRepository.findAll());
+        } else {
+            transactions = userRepository.findOne(userId).getTransactions();
+        }
+        if (StringUtils.isNotBlank(txAmountCy)) {
+            transactions = transactions.stream().filter(transaction ->
+                    txAmountCy.equals(transaction.getTxAmountCy())).collect(Collectors.toSet());
+        }
+        return transactions;
     }
 
     /**

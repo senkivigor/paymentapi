@@ -303,3 +303,72 @@ Example of JSON  response body:
     "errMsg": "Transaction is not valid or has been already processed"
 }
 ```
+
+### Find all transactions filtered by userId and txAmountCy
+interview-assign-ihor-senkiv.herokuapp.com/:8080/api/transactions
+
+Method: GET
+
+Parameters:  
+userId (optional)  
+txAmountCy(optional)
+
+Example of request URL: 
+interview-assign-ihor-senkiv.herokuapp.com/:8080/api/transactions/?userId=2&txAmountCy=EUR
+
+Example of JSON  response body: 
+
+```sh
+[
+    {
+        "id": 4,
+        "txId": "345",
+        "user": "2",
+        "txAmount": 100,
+        "txAmountCy": "EUR",
+        "fee": null,
+        "feeCy": null,
+        "feeMode": null,
+        "authCode": "fac5a4b3-185a-4c1b-9daa-e16a49476588",
+        "transactionStatus": "PENDING"
+    },
+    {
+        "id": 1,
+        "txId": "123",
+        "user": "2",
+        "txAmount": 100,
+        "txAmountCy": "EUR",
+        "fee": null,
+        "feeCy": null,
+        "feeMode": null,
+        "authCode": "261984c7-10f4-4cb8-856c-768f72b4c675",
+        "transactionStatus": "PENDING"
+    }
+]
+
+```
+
+### Find transaction by txId
+interview-assign-ihor-senkiv.herokuapp.com/:8080/api/transactions/{txId}
+
+Method: GET
+
+Example of request URL: 
+interview-assign-ihor-senkiv.herokuapp.com/:8080/api/transactions/123
+
+Example of JSON  response body: 
+
+```sh
+{
+    "id": 1,
+    "txId": "123",
+    "user": "2",
+    "txAmount": 100,
+    "txAmountCy": "EUR",
+    "fee": null,
+    "feeCy": null,
+    "feeMode": null,
+    "authCode": "261984c7-10f4-4cb8-856c-768f72b4c675",
+    "transactionStatus": "PENDING"
+}
+```

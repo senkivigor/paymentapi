@@ -4,13 +4,13 @@ import com.senkiv.interview.assignment.domain.dto.TransactionRequestDTO;
 import com.senkiv.interview.assignment.domain.dto.TransactionResponseDTO;
 import com.senkiv.interview.assignment.domain.dto.VerifyUserRequestDTO;
 import com.senkiv.interview.assignment.domain.dto.VerifyUserResponseDTO;
+import com.senkiv.interview.assignment.domain.entity.Transaction;
 import com.senkiv.interview.assignment.service.TransactionService;
 import com.senkiv.interview.assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -43,5 +43,16 @@ public class Controller {
     @PostMapping("/transfer")
     public TransactionResponseDTO transferTransaction(@RequestBody TransactionRequestDTO transactionRequestDTO) {
         return transactionService.transferTransaction(transactionRequestDTO);
+    }
+
+    @RequestMapping("/transactions")
+    public Set<Transaction> getTransactions(@RequestParam(value = "userId", required = false) String userId,
+                                            @RequestParam(value = "txAmountCy", required = false) String txAmountCy) {
+        return transactionService.getTransactionsByUserIdAndAmountCy(userId, txAmountCy);
+    }
+
+    @RequestMapping("/transactions/{txId}")
+    public Transaction getTransactionByTxId(@PathVariable(value = "txId") String txId) {
+        return transactionService.getTransctionByTxId(txId);
     }
 }
